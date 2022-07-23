@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<meta charset="ISO-8859-1">
+<title>Employee Information</title>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+	<div align="center">
+		<div sec:authorize="isAuthenticated()">
+			Welcome <b><span sec:authentication="name">Username</span></b> &nbsp;
+			<i><span sec:authentication="principal.authorities">Roles</span></i>
+		</div>
+
+		<form th:action="@{/logout}" method="post">
+			<input type="submit" value="Logout" />
+		</form>
+
+		<h1>Employee List</h1>
+		<div sec:authorize="hasAnyAuthority('CREATOR', 'ADMIN')">
+			<a href="/new">Add New Employee</a>
+		</div>
+		<table border="1" cellpadding="10" class="table">
+			<thead>
+				<tr>
+					<th>Employee ID</th>
+					<th>First Name</th>
+					<th>Last Name</th>
+					<th>Email</th>
+					<th sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')">EDIT/DELETE</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="employee : ${listEmployee}">
+					<td th:text="${employee.eid}">Employee ID</td>
+					<td th:text="${employee.fname}">First Name</td>
+					<td th:text="${employee.lname}">Last Name</td>
+                    <td th:text="${employee.email}">Email</td>
+
+					<td>
+						<div sec:authorize="hasAnyAuthority('ADMIN', 'EDITOR')">
+							<a th:href="@{'/edit/' + ${employee.eid}}">Edit</a>
+						</div> &nbsp;&nbsp;&nbsp;
+						<div sec:authorize="hasAnyAuthority('ADMIN')">
+							<a th:href="@{'/delete/' + ${employee.eid}}">Delete</a>
+						</div>
+					</td>
+
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>
